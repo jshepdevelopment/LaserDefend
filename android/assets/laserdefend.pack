@@ -1,0 +1,82 @@
+
+laserdefend.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bad0
+  rotate: false
+  xy: 1, 585
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+bad1
+  rotate: false
+  xy: 1, 327
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+bad2
+  rotate: false
+  xy: 259, 585
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+bad3
+  rotate: false
+  xy: 1, 69
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+bad4
+  rotate: false
+  xy: 259, 327
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+cover
+  rotate: false
+  xy: 517, 585
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+jewel0
+  rotate: false
+  xy: 1, 35
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+jewel1
+  rotate: false
+  xy: 259, 293
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+jewel2
+  rotate: false
+  xy: 517, 551
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+jewel3
+  rotate: false
+  xy: 775, 809
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+jewel4
+  rotate: false
+  xy: 1, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

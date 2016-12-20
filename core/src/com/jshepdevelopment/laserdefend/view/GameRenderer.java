@@ -246,7 +246,7 @@ public class GameRenderer {
                         playerLaserDest.x - Gdx.graphics.getWidth()/2
                 ) * 180.0d / Math.PI;
 
-                laser1.degrees = (float)laserDegrees;
+                laser1.degrees = (float)laserDegrees; //(float)laserDegrees;
 
                 switch (tempEnemy.getState()) {
                     case GOOD:
@@ -327,7 +327,7 @@ public class GameRenderer {
 
         // Drawing everything on the screen
         batch.begin();
-        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(backgroundTexture, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);

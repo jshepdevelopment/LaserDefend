@@ -28,8 +28,8 @@ public class EnemyHandler {
         return enemyList;
     }
 
-    public void setList(ArrayList<Enemy> foodList) {
-        this.enemyList = foodList;
+    public void setList(ArrayList<Enemy> enemyList) {
+        this.enemyList = enemyList;
     }
 
     public void addFood(Vector2 position, EnemyState state) {
@@ -38,14 +38,14 @@ public class EnemyHandler {
 
     public void animate(float delta) {
         for (int i=0;i<enemyList.size();i++) {
-            Enemy food = enemyList.get(i);
-            if (food.getBounds().width < 1.2f*Gdx.graphics.getPpcX()){
+            Enemy enemy = enemyList.get(i);
+            if (enemy.getBounds().width < 1.2f*Gdx.graphics.getPpcX()){
 
-                food.setBounds(new Rectangle(
-                                food.getBounds().x,
-                                food.getBounds().y,
-                                food.getBounds().width + delta,
-                                food.getBounds().height + delta
+                enemy.setBounds(new Rectangle(
+                                enemy.getBounds().x,
+                                enemy.getBounds().y,
+                                enemy.getBounds().width + delta,
+                                enemy.getBounds().height + delta
                         )
                 );
             }

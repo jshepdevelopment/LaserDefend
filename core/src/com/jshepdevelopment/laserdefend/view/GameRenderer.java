@@ -8,6 +8,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -40,6 +41,8 @@ public class GameRenderer {
     private ParticleEffect effect;
     private ArrayList<ParticleEffect> effects = new ArrayList<ParticleEffect>();
     ShapeRenderer shape;
+    ShapeRenderer playerLaserShape;
+
     private EnemyHandler enemyHandler;
 
 
@@ -79,6 +82,7 @@ public class GameRenderer {
         ewSound = Gdx.audio.newSound(Gdx.files.internal("sounds/eww.wav"));
 
         shape = new ShapeRenderer();
+        playerLaserShape = new ShapeRenderer();
 
         // Loading the particle effect used when snatching the food
         effect = new ParticleEffect();
@@ -98,7 +102,9 @@ public class GameRenderer {
     int score = 0;
     int ending = 3;
     boolean flash = false;
+    boolean laserOn = false;
     float flashDuration = 0.0f;
+    float laserDuration = 0.0f;
 
     // Render the game
     public void render(float delta)
@@ -108,6 +114,7 @@ public class GameRenderer {
         timeGood += delta;
         timeBad+=delta;
         timeCoveredAppearance+=delta;
+
 
         // Placing the food on-screen
         if (timeGood > .8f) {
@@ -169,6 +176,7 @@ public class GameRenderer {
                         effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
                         effect.start();
                         effects.add(effect);
+                        laserOn = true;
                         // tagging the food to be removed
                         score++;
                         // playing the sound
@@ -182,6 +190,7 @@ public class GameRenderer {
                         effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
                         effect.start();
                         effects.add(effect);
+                        laserOn = true;
                         // tagging the food to be removed
                         ending--;
                         flash = true;
@@ -200,6 +209,7 @@ public class GameRenderer {
                         effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
                         effect.start();
                         effects.add(effect);
+                        laserOn = true;
                         // tagging the food to be removed
                         score+=10;
                         // playing the sound
@@ -251,6 +261,23 @@ public class GameRenderer {
         for (ParticleEffect eff : effects) {
             eff.draw(batch, delta/2);
         }
+
+        //Start a player laser to enemy
+        if (laserOn) {
+
+
+            playerLaserShape.begin(ShapeRenderer.ShapeType.Filled);
+            playerLaserShape.setColor(Color.WHITE);
+            //shape.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            playerLaserShape.rectLine(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, touchedArea.x,
+            touchedArea.y, 12);
+            playerLaserShape.end();
+            laserDuration += delta;
+            if (laserDuration > 0.50f) {
+                laserOn = false;
+            }
+        }
+
         // Displaying a flash when the user snatched bad food
         if (flash) {
 
@@ -259,10 +286,12 @@ public class GameRenderer {
             shape.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             shape.end();
             flashDuration +=delta;
-            if (flashDuration > 0.15f)
+            if (flashDuration > 0.50f)
                 flash = false;
         }
         batch.end();
+
+
 
     }
 

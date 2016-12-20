@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.jshepdevelopment.laserdefend.model.Enemy;
 import com.jshepdevelopment.laserdefend.model.EnemyHandler;
+import com.jshepdevelopment.laserdefend.model.Laser;
 import com.jshepdevelopment.laserdefend.screens.EndScreen;
 
 import java.util.ArrayList;
@@ -28,11 +30,27 @@ public class GameRenderer {
 
     private Game game;
 
+    private Texture texLaserS1;
+    private Texture texLaserS2;
+    private Texture texLaserM1;
+    private Texture texLaserM2;
+    private Texture texLaserE1;
+    private Texture texLaserE2;
+
+    private Sprite spriteLaserS1;
+    private Sprite spriteLaserS2;
+    private Sprite spriteLaserM1;
+    private Sprite spriteLaserM2;
+    private Sprite spriteLaserE1;
+    private Sprite spriteLaserE2;
+
+    private Laser laser1;
+
     private TextureRegion backgroundTexture;
     private TextureRegion[] goodTexture = new TextureRegion[5];
     private TextureRegion[] badTexture = new TextureRegion[5];
     private TextureRegion coveredTexture;
-    private SpriteBatch batch;
+    public SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
     private Vector2 playerLaserDest = new Vector2();
 
@@ -45,26 +63,46 @@ public class GameRenderer {
     private ParticleEffect enemyLaserEffect;
     private ArrayList<ParticleEffect> enemyLaserEffects = new ArrayList<ParticleEffect>();
 
-
-
     private ShapeRenderer shape;
-    private ShapeRenderer playerLaserShape;
+
     private EnemyHandler enemyHandler;
 
+    private static GameRenderer instance = null;
+
     public GameRenderer(Game game) {
+        instance = this;
         this.game = game;
         loadItems();
     }
 
     // Loading all the necessary items
     private void loadItems() {
-        backgroundTexture = new TextureRegion(new Texture(
-                Gdx.files.internal("background/background.png")),
-                0,
-                0,
-                Gdx.graphics.getWidth(),
-                Gdx.graphics.getHeight());
+        backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
+
         batch = new SpriteBatch();
+
+        this.texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
+        this.texLaserS2 = new Texture(Gdx.files.internal("effects/beamstart2.png"));
+        this.texLaserM1 = new Texture(Gdx.files.internal("effects/beammid1.png"));
+        this.texLaserM2 = new Texture(Gdx.files.internal("effects/beammid2.png"));
+        this.texLaserE1 = new Texture(Gdx.files.internal("effects/beamend1.png"));
+        this.texLaserE2 = new Texture(Gdx.files.internal("effects/beamend2.png"));
+
+        this.spriteLaserS1 = new Sprite(this.texLaserS1);
+        this.spriteLaserS2 = new Sprite(this.texLaserS2);
+        this.spriteLaserM1 = new Sprite(this.texLaserM1);
+        this.spriteLaserM2 = new Sprite(this.texLaserM2);
+        this.spriteLaserE1 = new Sprite(this.texLaserE1);
+        this.spriteLaserE2 = new Sprite(this.texLaserE2);
+
+        this.laser1 = new Laser();
+        laser1.begin1 = this.spriteLaserS1;
+        laser1.begin2 = this.spriteLaserS2;
+        laser1.mid1 = this.spriteLaserM1;
+        laser1.mid2 = this.spriteLaserM2;
+        laser1.end1 = this.spriteLaserE1;
+        laser1.end2 = this.spriteLaserE2;
+        laser1.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 
         // Loading the atlas which contains the spritesheet
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("models/models.pack"));
@@ -87,7 +125,6 @@ public class GameRenderer {
         ewSound = Gdx.audio.newSound(Gdx.files.internal("sounds/eww.wav"));
 
         shape = new ShapeRenderer();
-        playerLaserShape = new ShapeRenderer();
 
         // Loading the particle effect used when snatching the food
         effect = new ParticleEffect();
@@ -107,17 +144,16 @@ public class GameRenderer {
 	 * Render fields
 	 */
 
-    float timePassed = 0.0f;
-    float timeGood = 0.0f;
-    float timeBad = 0.0f;
-    float timeCoveredAppearance = 0.0f;
-    int score = 0;
-    int ending = 3;
-    boolean flash = false;
-    boolean laserOn = false;
-    float flashDuration = 0.0f;
-    float laserDuration = 0.0f;
-    double degrees = 0;
+    private float timePassed = 0.0f;
+    private float timeGood = 0.0f;
+    private float timeBad = 0.0f;
+    private float timeCoveredAppearance = 0.0f;
+    private int score = 0;
+    private int ending = 3;
+    private boolean flash = false;
+    private boolean laserOn = false;
+    private float flashDuration = 0.0f;
+    private float laserDuration = 0.0f;
 
     // Render the game
     public void render(float delta)
@@ -159,12 +195,12 @@ public class GameRenderer {
             timeCoveredAppearance = 0.0f;
 
             enemyLaserEffect.setPosition(tempx,tempy);
-            degrees = Math.atan2(
+            double degreesA = Math.atan2(
                     Gdx.graphics.getHeight()/2 - tempy,
                     Gdx.graphics.getWidth()/2 - tempx
             ) * 180.0d / Math.PI;
 
-            rotateBy((float) degrees);
+            rotateBy((float) degreesA);
             enemyLaserEffect.start();
             enemyLaserEffects.add(enemyLaserEffect);
         }
@@ -197,6 +233,20 @@ public class GameRenderer {
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
+
+                //laser1.distance = (150*100%300);
+                double laserDistance = Math.sqrt((Gdx.graphics.getWidth()/2-playerLaserDest.x)*
+                        (Gdx.graphics.getWidth()/2-playerLaserDest.x) +
+                        (Gdx.graphics.getHeight()/2-playerLaserDest.y)*
+                                (Gdx.graphics.getHeight()/2-playerLaserDest.y));
+                laser1.distance = (float)laserDistance;
+
+                double laserDegrees = Math.atan2(
+                        playerLaserDest.y - Gdx.graphics.getHeight()/2,
+                        playerLaserDest.x - Gdx.graphics.getWidth()/2
+                ) * 180.0d / Math.PI;
+
+                laser1.degrees = (float)laserDegrees;
 
                 switch (tempEnemy.getState()) {
                     case GOOD:
@@ -274,9 +324,12 @@ public class GameRenderer {
             game.setScreen(new EndScreen(score, game));
         }
 
+
         // Drawing everything on the screen
         batch.begin();
-        batch.draw(backgroundTexture, 0, 0);
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();
         gameFont.draw(batch, String.valueOf(score), 20.0f, Gdx.graphics.getHeight()-20.0f);
@@ -301,13 +354,8 @@ public class GameRenderer {
         //Start a player laser to enemy
         if (laserOn) {
 
-            playerLaserShape.begin(ShapeRenderer.ShapeType.Filled);
-            playerLaserShape.setColor(Color.WHITE);
-            //shape.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            playerLaserShape.rectLine(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, playerLaserDest.x,
-                    playerLaserDest.y, 12);
-            playerLaserShape.end();
-            laserDuration += delta;
+            laser1.render();
+
             if (laserDuration > 0.50f) {
                 laserDuration = 0.0f;
                 laserOn = false;
@@ -399,5 +447,12 @@ public class GameRenderer {
         gameFont.dispose();
         enemyHandler.clearList();
     }
-
+    /**
+     * Accessor
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T extends GameRenderer> T get() {
+        return (T) instance;
+    }
 }

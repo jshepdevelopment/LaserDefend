@@ -35,6 +35,7 @@ public class GameRenderer {
     private TextureRegion coveredTexture;
     private SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
+    private Vector2 playerLaserDest = new Vector2();
     private BitmapFont gameFont;
     private Sound eatSound;
     private Sound ewSound;
@@ -165,15 +166,18 @@ public class GameRenderer {
         // Checking the collision between the touched area and the food
         ArrayList<Enemy> tempList = enemyHandler.getList();
         for (int i = 0; i < tempList.size(); i++) {
-            Enemy tempFood = tempList.get(i);
-            if (touchedArea.x >= tempFood.getBounds().x &&
-                    touchedArea.x <= tempFood.getBounds().x+tempFood.getBounds().width &&
-                    touchedArea.y >= tempFood.getBounds().y &&
-                    touchedArea.y <= tempFood.getBounds().y+tempFood.getBounds().height) {
+            Enemy tempEnemy = tempList.get(i);
+            if (touchedArea.x >= tempEnemy.getBounds().x &&
+                    touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
+                    touchedArea.y >= tempEnemy.getBounds().y &&
+                    touchedArea.y <= tempEnemy.getBounds().y+tempEnemy.getBounds().height) {
 
-                switch (tempFood.getState()) {
+                playerLaserDest.x = touchedArea.x;
+                playerLaserDest.y = touchedArea.y;
+
+                switch (tempEnemy.getState()) {
                     case GOOD:
-                        effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
+                        effect.setPosition(tempEnemy.getBounds().x, tempEnemy.getBounds().y);
                         effect.start();
                         effects.add(effect);
                         laserOn = true;
@@ -187,7 +191,7 @@ public class GameRenderer {
                         break;
 
                     case BAD:
-                        effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
+                        effect.setPosition(tempEnemy.getBounds().x, tempEnemy.getBounds().y);
                         effect.start();
                         effects.add(effect);
                         laserOn = true;
@@ -206,15 +210,15 @@ public class GameRenderer {
                         break;
 
                     case GOOD_UNCOVERED:
-                        effect.setPosition(tempFood.getBounds().x, tempFood.getBounds().y);
+                        effect.setPosition(tempEnemy.getBounds().x, tempEnemy.getBounds().y);
                         effect.start();
                         effects.add(effect);
                         laserOn = true;
-                        // tagging the food to be removed
+                        // tagging the enemy to be removed
                         score+=10;
                         // playing the sound
                         eatSound.play();
-                        // Remove the food from the list
+                        // Remove the enemy from the list
                         tempList.remove(i);
                         i--;
                         break;
@@ -245,7 +249,7 @@ public class GameRenderer {
         batch.begin();
         batch.draw(backgroundTexture, 0, 0);
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
-        drawFood();
+        drawEnemy();
         gameFont.draw(batch, String.valueOf(score), 20.0f, Gdx.graphics.getHeight()-20.0f);
         // Drawing the lives on screen
         for (int i = ending;i>0;i--){
@@ -269,16 +273,17 @@ public class GameRenderer {
             playerLaserShape.begin(ShapeRenderer.ShapeType.Filled);
             playerLaserShape.setColor(Color.WHITE);
             //shape.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            playerLaserShape.rectLine(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, touchedArea.x,
-            touchedArea.y, 12);
+            playerLaserShape.rectLine(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, playerLaserDest.x,
+                    playerLaserDest.y, 12);
             playerLaserShape.end();
             laserDuration += delta;
             if (laserDuration > 0.50f) {
+                laserDuration = 0.0f;
                 laserOn = false;
             }
         }
 
-        // Displaying a flash when the user snatched bad food
+        // Displaying a flash when the user snatched bad enemy
         if (flash) {
 
             shape.begin(ShapeRenderer.ShapeType.Filled);
@@ -287,23 +292,27 @@ public class GameRenderer {
             shape.end();
             flashDuration +=delta;
             if (flashDuration > 0.50f)
+                flashDuration = 0.0f;
                 flash = false;
         }
+        //Gdx.app.log("JSLOG", "flashDuration: " + laserDuration);
+//        Gdx.app.log("JSLOG", "flashDuration: " + flashDuration);
+
         batch.end();
 
 
 
     }
 
-    // Draw the food
-    private void drawFood() {
+    // Draw the enemy
+    private void drawEnemy() {
         for (Enemy f : enemyHandler.getList()) {
             // If the index is -1 (texture not set), assign a number between 0 and 4
             if (f.getIndex() == -1) {
                 int index = (int)(Math.random()*goodTexture.length);
                 f.setIndex(index);
             }
-            // draw the food according to its state
+            // draw the enemy according to its state
             switch (f.getState()) {
                 case GOOD: case GOOD_UNCOVERED:
                     batch.draw(goodTexture[f.getIndex()],

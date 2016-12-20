@@ -11,11 +11,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.jshepdevelopment.laserdefend.model.Enemy;
 import com.jshepdevelopment.laserdefend.model.EnemyHandler;
 import com.jshepdevelopment.laserdefend.screens.EndScreen;
@@ -115,6 +117,7 @@ public class GameRenderer {
     boolean laserOn = false;
     float flashDuration = 0.0f;
     float laserDuration = 0.0f;
+    double degrees = 0;
 
     // Render the game
     public void render(float delta)
@@ -154,7 +157,14 @@ public class GameRenderer {
             int tempy = (int)(Math.random()*Gdx.graphics.getHeight());
             enemyHandler.addEnemy(new Vector2(tempx, tempy), Enemy.EnemyState.COVERED);
             timeCoveredAppearance = 0.0f;
+
             enemyLaserEffect.setPosition(tempx,tempy);
+            degrees = Math.atan2(
+                    Gdx.graphics.getHeight()/2 - tempy,
+                    Gdx.graphics.getWidth()/2 - tempx
+            ) * 180.0d / Math.PI;
+
+            rotateBy((float) degrees);
             enemyLaserEffect.start();
             enemyLaserEffects.add(enemyLaserEffect);
         }
@@ -366,6 +376,18 @@ public class GameRenderer {
 
     public void setTouchedArea(Vector2 area) {
         this.touchedArea = area;
+    }
+
+    public void rotateBy(float amountInDegrees) {
+        Array<ParticleEmitter> emitters = enemyLaserEffect.getEmitters();
+        for (int i = 0; i < emitters.size; i++) {
+            ParticleEmitter.ScaledNumericValue val = emitters.get(i).getAngle();
+            float amplitude = (val.getHighMax() - val.getHighMin()) / 2f;
+            float h1 = amountInDegrees + amplitude;
+            float h2 = amountInDegrees - amplitude;
+            val.setHigh(h1, h2);
+            val.setLow(amountInDegrees);
+        }
     }
 
     public void dispose() {

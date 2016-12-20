@@ -32,7 +32,7 @@ public class EnemyHandler {
         this.enemyList = enemyList;
     }
 
-    public void addFood(Vector2 position, EnemyState state) {
+    public void addEnemy(Vector2 position, EnemyState state) {
         enemyList.add(new Enemy(position, state));
     }
 

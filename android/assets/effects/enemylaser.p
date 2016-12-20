@@ -1,12 +1,12 @@
-mist
+enemylaser
 - Delay -
 active: false
 - Duration - 
 lowMin: 200.0
 lowMax: 200.0
 - Count - 
-min: 0
-max: 500
+min: 15
+max: 100
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
@@ -38,7 +38,7 @@ active: false
 - Y Offset - 
 active: false
 - Spawn Shape - 
-shape: point
+shape: line
 - Spawn Width - 
 lowMin: 0.0
 lowMax: 0.0
@@ -60,10 +60,10 @@ scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Scale - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 32.0
-highMax: 32.0
+lowMin: 12.0
+lowMax: 12.0
+highMin: 12.0
+highMax: 12.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -84,8 +84,8 @@ timeline0: 0.0
 active: true
 lowMin: 90.0
 lowMax: 90.0
-highMin: 45.0
-highMax: 135.0
+highMin: 90.0
+highMax: 90.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -130,5 +130,6 @@ continuous: false
 aligned: false
 additive: true
 behind: false
+premultipliedAlpha: false
 - Image Path -
-particle.png
+/C:/Users/23892/Documents/Particle/particle.png

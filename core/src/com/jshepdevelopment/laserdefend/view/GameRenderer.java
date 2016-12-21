@@ -221,12 +221,39 @@ public class GameRenderer {
 
         // Checking if the covered enemy should show the contents
         for (Enemy enemy : enemyHandler.getList()){
-            if (enemy.getState() == Enemy.EnemyState.COVERED)
+             if (enemy.getState() == Enemy.EnemyState.COVERED)
                 //if (enemy.getBounds().getY() < Gdx.graphics.getHeight()/2 * Gdx.graphics.getPpcX()){
                 if (enemy.getBounds().getY() < Gdx.graphics.getHeight()/2){
                     int rand = (int)(Math.random()*2);
                     if (rand % 2 == 0) {
                         enemy.setState(Enemy.EnemyState.GOOD_UNCOVERED);
+
+                        enemyLaser = new Laser();
+                        enemyLaser.begin1 = spriteLaserS1;
+                        enemyLaser.begin2 = spriteLaserS2;
+                        enemyLaser.mid1 = spriteLaserM1;
+                        enemyLaser.mid2 = spriteLaserM2;
+                        enemyLaser.end1 = spriteLaserE1;
+                        enemyLaser.end2 = spriteLaserE2;
+                        enemyLaser.setColor(Color.GREEN);
+
+                        enemyLaser.position.set(enemy.getBounds().getX(), enemy.getBounds().getY());
+
+                        double enemyLaserDistance = Math.sqrt((enemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
+                                (enemy.getBounds().getX()-Gdx.graphics.getWidth()/2) +
+                                (enemy.getBounds().getY()-0)*
+                                        (enemy.getBounds().getY()-0));
+                        enemyLaser.distance = (float)enemyLaserDistance;
+
+                        double enemyLaserDegrees = Math.atan2(
+                                0 - enemy.getBounds().getY(),
+                                Gdx.graphics.getWidth()/2 - enemy.getBounds().getX()
+                        ) * 180.0d / Math.PI;
+
+                        enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
+                        enemyLaserOn = true;
+                        enemyLasers.add(this.enemyLaser);
+                        Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
                     }
                     else {
                         enemy.setState(Enemy.EnemyState.BAD);
@@ -400,6 +427,7 @@ public class GameRenderer {
             if (enemyLaserOn) {
                 enemyLaserDuration += delta;
                 if (enemyLaserDuration > 0.50f) {
+                    enemyLasers.remove(eLaser);
                     enemyLaserDuration = 0.0f;
                     enemyLaserOn = false;
                 }

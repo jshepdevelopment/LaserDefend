@@ -89,7 +89,7 @@ public class EndScreen implements Screen {
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        heading = new Label("You ate too much bad food!", skin);
+        heading = new Label("Game over!", skin);
         scoreLabel = new Label("Your score was: "+score, skin);
 
         buttonBack = new TextButton("Try Again", skin);

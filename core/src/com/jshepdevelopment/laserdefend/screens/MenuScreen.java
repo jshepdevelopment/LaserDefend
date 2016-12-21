@@ -96,7 +96,7 @@ public class MenuScreen implements Screen{
 
         title = new BitmapFont(Gdx.files.internal("fonts/title.fnt"));
         LabelStyle headingStyle = new LabelStyle(title, new Color(0, 0, 0, 1));
-        heading = new Label("Snatch the Food", headingStyle);
+        heading = new Label("Laser Defense", headingStyle);
 
         //putting all that into a table
         table.add(heading);

@@ -168,7 +168,6 @@ public class GameRenderer {
         timeBad+=delta;
         timeCoveredAppearance+=delta;
 
-
         // Placing the enemy on-screen
         if (timeGood > .8f) {
             enemyHandler.addEnemy(
@@ -225,6 +224,8 @@ public class GameRenderer {
                 }
         }
 
+
+
         // Checking the collision between the touched area and the enemy
         ArrayList<Enemy> tempList = enemyHandler.getList();
         for (int i = 0; i < tempList.size(); i++) {
@@ -233,10 +234,11 @@ public class GameRenderer {
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
                     touchedArea.y >= tempEnemy.getBounds().y &&
                     touchedArea.y <= tempEnemy.getBounds().y+tempEnemy.getBounds().height) {
-
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
+                Gdx.app.log("JSLOG", "playerLaserDest.x " + playerLaserDest.x + " playerLaserDest.y " + playerLaserDest.y);
+                //Gdx.app.log("JSLOG", "touchedArea.x " + touchedArea.x + " touchedArea.y " + touchedArea.y);
 
                 //laser1.distance = (150*100%300);
                 double laserDistance = Math.sqrt((Gdx.graphics.getWidth()/2-playerLaserDest.x)*

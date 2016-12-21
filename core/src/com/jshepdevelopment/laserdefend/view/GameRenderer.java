@@ -104,7 +104,7 @@ public class GameRenderer {
         laser1.mid2 = this.spriteLaserM2;
         laser1.end1 = this.spriteLaserE1;
         laser1.end2 = this.spriteLaserE2;
-        laser1.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+        laser1.position.set(Gdx.graphics.getWidth()/2, 0);
 
         // Loading the atlas which contains the spritesheet
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("models/laserdefend.pack"));
@@ -199,7 +199,7 @@ public class GameRenderer {
 
             enemyLaserEffect.setPosition(tempx,tempy);
             double degreesA = Math.atan2(
-                    Gdx.graphics.getHeight()/2 - tempy,
+                    0 - tempy,
                     Gdx.graphics.getWidth()/2 - tempx
             ) * 180.0d / Math.PI;
 
@@ -243,15 +243,15 @@ public class GameRenderer {
                 //laser1.distance = (150*100%300);
                 double laserDistance = Math.sqrt((Gdx.graphics.getWidth()/2-playerLaserDest.x)*
                         (Gdx.graphics.getWidth()/2-playerLaserDest.x) +
-                        (Gdx.graphics.getHeight()/2-playerLaserDest.y)*
-                                (Gdx.graphics.getHeight()/2-playerLaserDest.y));
+                        (0-playerLaserDest.y)*
+                                (0-playerLaserDest.y));
                 laser1.distance = (float)laserDistance;
 
                 double laserDegrees = Math.atan2(
-                        playerLaserDest.y - Gdx.graphics.getHeight()/2,
+                        playerLaserDest.y - 0,
                         playerLaserDest.x - Gdx.graphics.getWidth()/2
                 ) * 180.0d / Math.PI;
-                
+
                 laser1.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
                 Gdx.app.log("JSLOG", "laser1.degrees: " + laserDegrees);
 
@@ -336,6 +336,8 @@ public class GameRenderer {
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(penguinTexture, Gdx.graphics.getWidth()/2, 0, 128, 128);
+
 
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);

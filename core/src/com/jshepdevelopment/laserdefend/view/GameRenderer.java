@@ -32,6 +32,14 @@ public class GameRenderer {
     private int enemyLaserCount = 10;
     //private Laser[] enemyLaser = new Laser[enemyLaserCount];
     private Laser enemyLaser;
+    private ArrayList<Laser> enemyLasers = new ArrayList<Laser>();
+
+    private Sprite spriteLaserS1;
+    private Sprite spriteLaserS2;
+    private Sprite spriteLaserM1;
+    private Sprite spriteLaserM2;
+    private Sprite spriteLaserE1;
+    private Sprite spriteLaserE2;
 
     private TextureRegion backgroundTexture;
     private TextureRegion[] goodTexture = new TextureRegion[5];
@@ -74,12 +82,6 @@ public class GameRenderer {
         Texture texLaserE1;
         Texture texLaserE2;
 
-        Sprite spriteLaserS1;
-        Sprite spriteLaserS2;
-        Sprite spriteLaserM1;
-        Sprite spriteLaserM2;
-        Sprite spriteLaserE1;
-        Sprite spriteLaserE2;
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
@@ -105,16 +107,6 @@ public class GameRenderer {
         playerLaser.end2 = spriteLaserE2;
         playerLaser.setColor(Color.RED);
         playerLaser.position.set(Gdx.graphics.getWidth()/2, 0);
-
-        enemyLaser = new Laser();
-        enemyLaser.begin1 = spriteLaserS1;
-        enemyLaser.begin2 = spriteLaserS2;
-        enemyLaser.mid1 = spriteLaserM1;
-        enemyLaser.mid2 = spriteLaserM2;
-        enemyLaser.end1 = spriteLaserE1;
-        enemyLaser.end2 = spriteLaserE2;
-        enemyLaser.setColor(Color.GREEN);
-        enemyLaser.position.set(Gdx.graphics.getWidth()/2, 0);
 
         batch = new SpriteBatch();
 
@@ -238,6 +230,16 @@ public class GameRenderer {
                     }
                     else {
                         enemy.setState(Enemy.EnemyState.BAD);
+
+                        enemyLaser = new Laser();
+                        enemyLaser.begin1 = spriteLaserS1;
+                        enemyLaser.begin2 = spriteLaserS2;
+                        enemyLaser.mid1 = spriteLaserM1;
+                        enemyLaser.mid2 = spriteLaserM2;
+                        enemyLaser.end1 = spriteLaserE1;
+                        enemyLaser.end2 = spriteLaserE2;
+                        enemyLaser.setColor(Color.GREEN);
+
                         enemyLaser.position.set(enemy.getBounds().getX(), enemy.getBounds().getY());
 
                         double enemyLaserDistance = Math.sqrt((enemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
@@ -252,8 +254,10 @@ public class GameRenderer {
                         ) * 180.0d / Math.PI;
 
                         enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
-                        Gdx.app.log("JSLOG", "playerLaser.degrees: " + enemyLaserDegrees);
                         enemyLaserOn = true;
+                        enemyLasers.add(this.enemyLaser);
+                        Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
+
                     }
                 }
         }
@@ -269,7 +273,7 @@ public class GameRenderer {
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
-                Gdx.app.log("JSLOG", "playerLaserDest.x " + playerLaserDest.x + " playerLaserDest.y " + playerLaserDest.y);
+                //Gdx.app.log("JSLOG", "playerLaserDest.x " + playerLaserDest.x + " playerLaserDest.y " + playerLaserDest.y);
                 //Gdx.app.log("JSLOG", "touchedArea.x " + touchedArea.x + " touchedArea.y " + touchedArea.y);
 
                 //playerLaser.distance = (150*100%300);
@@ -285,8 +289,6 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 playerLaser.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
-                Gdx.app.log("JSLOG", "playerLaser.degrees: " + laserDegrees);
-
 
                 switch (tempEnemy.getState()) {
                     case GOOD:
@@ -392,16 +394,17 @@ public class GameRenderer {
             }
         }
 
-        //Start an enemy laser to player
-        if (enemyLaserOn) {
-            enemyLaser.render();
-            enemyLaserDuration += delta;
-            if (enemyLaserDuration > 0.50f) {
-                enemyLaserDuration = 0.0f;
-                enemyLaserOn = false;
+        for (Laser eLaser : enemyLasers) {
+            //Start an enemy laser to player
+            eLaser.render();
+            if (enemyLaserOn) {
+                enemyLaserDuration += delta;
+                if (enemyLaserDuration > 0.50f) {
+                    enemyLaserDuration = 0.0f;
+                    enemyLaserOn = false;
+                }
             }
         }
-
         // HUD
         gameFont.draw(batch, String.valueOf(score), 20.0f, Gdx.graphics.getHeight()-20.0f);
         // Drawing the lives on screen

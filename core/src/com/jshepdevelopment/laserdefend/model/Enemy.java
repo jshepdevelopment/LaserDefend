@@ -18,7 +18,8 @@ public class Enemy {
         COVERED,
         GOOD_UNCOVERED,
     }
-    private static final float SIZE = .0f;
+    private static final float SIZE = 1.0f;
+    private float speed = 1;
 
     private EnemyState state;
     private int textureIndex;
@@ -26,8 +27,8 @@ public class Enemy {
     private Rectangle bounds = new Rectangle();
 
     public Enemy(Vector2 position, EnemyState state) {
-        textureIndex = -1;
 
+        textureIndex = -1;
         bounds.x = position.x;
         bounds.y = position.y;
         bounds.width = SIZE * Gdx.graphics.getPpcX();
@@ -58,5 +59,13 @@ public class Enemy {
 
     public void setIndex(int index) {
         textureIndex = index;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float eSpeed) {
+        speed = eSpeed;
     }
 }

@@ -37,7 +37,34 @@ public class EnemyHandler {
     }
 
     public void animate(float delta) {
+
         for (int i=0;i<enemyList.size();i++) {
+            Enemy enemy = enemyList.get(i);
+            if (enemy.getState() == EnemyState.GOOD || enemy.getState() == EnemyState.COVERED){
+                enemy.setBounds(new Rectangle(
+                                enemy.getBounds().x,
+                                enemy.getBounds().y - delta * enemy.getSpeed(),
+                                enemy.getBounds().width,
+                                enemy.getBounds().height
+                        )
+                );
+            }
+            else if (enemy.getState() == EnemyState.BAD){
+                enemy.setBounds(new Rectangle(
+                                enemy.getBounds().x + delta * enemy.getSpeed(),
+                                enemy.getBounds().y,
+                                enemy.getBounds().width,
+                                enemy.getBounds().height
+                        )
+                );
+            }
+            else {
+               enemyList.remove(i);
+                i--;
+            }
+        }
+
+/*        for (int i=0;i<enemyList.size();i++) {
             Enemy enemy = enemyList.get(i);
             if (enemy.getBounds().width < 1.2f*Gdx.graphics.getPpcX()){
 
@@ -54,8 +81,8 @@ public class EnemyHandler {
                 i--;
             }
         }
+*/
     }
-
     public void clearList() {
         enemyList.clear();
     }

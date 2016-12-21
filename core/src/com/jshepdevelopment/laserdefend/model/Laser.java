@@ -24,6 +24,9 @@ public class Laser {
     private GameRenderer lt = GameRenderer.get();
     public Sprite begin1,begin2,mid1,mid2,end1,end2;
 
+    public void setColor(Color theColor) {
+        color = theColor;
+    }
 
     public void render() {
         begin1.setColor(color);

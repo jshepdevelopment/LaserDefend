@@ -74,6 +74,7 @@ public class MenuScreen implements Screen{
         table = new Table(skin);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+
         //Button PLAY
         buttonPlay = new TextButton("Play", skin);
         buttonPlay.pad(20);
@@ -95,7 +96,7 @@ public class MenuScreen implements Screen{
         });
 
         title = new BitmapFont(Gdx.files.internal("fonts/title.fnt"));
-        LabelStyle headingStyle = new LabelStyle(title, new Color(0, 0, 0, 1));
+        LabelStyle headingStyle = new LabelStyle(title, new Color(1, 1, 1, 1));
         heading = new Label("Laser Defense", headingStyle);
 
         //putting all that into a table

@@ -251,8 +251,8 @@ public class GameRenderer {
                         playerLaserDest.y - Gdx.graphics.getHeight()/2,
                         playerLaserDest.x - Gdx.graphics.getWidth()/2
                 ) * 180.0d / Math.PI;
-
-                laser1.degrees = (float)laserDegrees; //(float)laserDegrees;
+                
+                laser1.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
                 Gdx.app.log("JSLOG", "laser1.degrees: " + laserDegrees);
 
 

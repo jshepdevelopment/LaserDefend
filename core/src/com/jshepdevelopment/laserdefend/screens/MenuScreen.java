@@ -48,7 +48,7 @@ public class MenuScreen implements Screen{
         stage.act(delta);
         batch.begin();
         //		bckRenderer.render(-1);
-        batch.draw(backgroundTexture, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         stage.draw();
         //		Table.drawDebug(stage);

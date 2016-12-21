@@ -50,6 +50,8 @@ public class GameRenderer {
     private TextureRegion[] goodTexture = new TextureRegion[5];
     private TextureRegion[] badTexture = new TextureRegion[5];
     private TextureRegion coveredTexture;
+    private TextureRegion penguinTexture;
+
     public SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
     private Vector2 playerLaserDest = new Vector2();
@@ -105,17 +107,19 @@ public class GameRenderer {
         laser1.position.set(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 
         // Loading the atlas which contains the spritesheet
-        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("models/models.pack"));
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("models/laserdefend.pack"));
         // getting the sprites with for good food
-        for (int i = 0; i<5; i++) {
-            goodTexture[i] = atlas.findRegion("food"+i);
+        for (int i = 0; i < 5; i++) {
+            goodTexture[i] = atlas.findRegion("good"+i);
         }
         // getting the sprites for bad food
         for (int i = 0; i < 5; i++) {
-            badTexture[i] = atlas.findRegion("bfood"+i);
+            badTexture[i] = atlas.findRegion("bad"+i);
         }
         // getting the sprite for covered food
-        coveredTexture = atlas.findRegion("cfood");
+        coveredTexture = atlas.findRegion("cover");
+        penguinTexture = atlas.findRegion("penguin");
+
 
         enemyHandler = EnemyHandler.getInstance();
 
@@ -247,6 +251,8 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 laser1.degrees = (float)laserDegrees; //(float)laserDegrees;
+                Gdx.app.log("JSLOG", "laser1.degrees: " + laserDegrees);
+
 
                 switch (tempEnemy.getState()) {
                     case GOOD:
@@ -327,7 +333,7 @@ public class GameRenderer {
 
         // Drawing everything on the screen
         batch.begin();
-        batch.draw(backgroundTexture, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
@@ -336,11 +342,11 @@ public class GameRenderer {
         // Drawing the lives on screen
         for (int i = ending;i>0;i--){
             if (i == 3)
-                batch.draw(goodTexture[1], Gdx.graphics.getWidth()/1.3f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
+                batch.draw(penguinTexture, Gdx.graphics.getWidth()/1.3f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
             if (i == 2)
-                batch.draw(goodTexture[1], Gdx.graphics.getWidth()/1.2f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
+                batch.draw(penguinTexture, Gdx.graphics.getWidth()/1.2f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
             if (i == 1)
-                batch.draw(goodTexture[1], Gdx.graphics.getWidth()/1.11f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
+                batch.draw(penguinTexture, Gdx.graphics.getWidth()/1.11f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
 
         }
         // Displaying the particle effects

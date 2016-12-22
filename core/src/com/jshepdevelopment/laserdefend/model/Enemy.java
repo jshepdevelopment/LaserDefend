@@ -66,6 +66,7 @@ public class Enemy {
     }
 
     public void setSpeed(float eSpeed) {
-        speed = eSpeed;
+        this.speed = eSpeed;
     }
+
 }

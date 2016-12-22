@@ -33,6 +33,8 @@ public class GameRenderer {
     //private Laser[] enemyLaser = new Laser[enemyLaserCount];
     private Laser enemyLaser;
     private ArrayList<Laser> enemyLasers = new ArrayList<Laser>();
+    private ArrayList<Float> enemyLaserTimers = new ArrayList<Float>();
+
 
     private Sprite spriteLaserS1;
     private Sprite spriteLaserS2;
@@ -160,10 +162,10 @@ public class GameRenderer {
     private int ending = 3;
     private boolean flash = false;
     private boolean laserOn = false;
-    private boolean enemyLaserOn = false;
     private float flashDuration = 0.0f;
     private float laserDuration = 0.0f;
     private float enemyLaserDuration = 0.0f;
+    private boolean enemyLaserFired = false;
 
     // Render the game
     public void render(float delta)
@@ -189,7 +191,7 @@ public class GameRenderer {
             enemyHandler.addEnemy(
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight())),
+                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/8),
                     Enemy.EnemyState.GOOD
             );
 
@@ -201,7 +203,7 @@ public class GameRenderer {
             enemyHandler.addEnemy(
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight())),
+                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/2),
                     Enemy.EnemyState.COVERED);
             timeCoveredAppearance = 0.0f;
 
@@ -228,62 +230,9 @@ public class GameRenderer {
                     if (rand % 2 == 0) {
                         enemy.setState(Enemy.EnemyState.GOOD_UNCOVERED);
 
-                        enemyLaser = new Laser();
-                        enemyLaser.begin1 = spriteLaserS1;
-                        enemyLaser.begin2 = spriteLaserS2;
-                        enemyLaser.mid1 = spriteLaserM1;
-                        enemyLaser.mid2 = spriteLaserM2;
-                        enemyLaser.end1 = spriteLaserE1;
-                        enemyLaser.end2 = spriteLaserE2;
-                        enemyLaser.setColor(Color.GREEN);
-
-                        enemyLaser.position.set(enemy.getBounds().getX(), enemy.getBounds().getY());
-
-                        double enemyLaserDistance = Math.sqrt((enemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
-                                (enemy.getBounds().getX()-Gdx.graphics.getWidth()/2) +
-                                (enemy.getBounds().getY()-0)*
-                                        (enemy.getBounds().getY()-0));
-                        enemyLaser.distance = (float)enemyLaserDistance;
-
-                        double enemyLaserDegrees = Math.atan2(
-                                0 - enemy.getBounds().getY(),
-                                Gdx.graphics.getWidth()/2 - enemy.getBounds().getX()
-                        ) * 180.0d / Math.PI;
-
-                        enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
-                        enemyLaserOn = true;
-                        enemyLasers.add(this.enemyLaser);
-                        Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
                     }
                     else {
                         enemy.setState(Enemy.EnemyState.BAD);
-
-                        enemyLaser = new Laser();
-                        enemyLaser.begin1 = spriteLaserS1;
-                        enemyLaser.begin2 = spriteLaserS2;
-                        enemyLaser.mid1 = spriteLaserM1;
-                        enemyLaser.mid2 = spriteLaserM2;
-                        enemyLaser.end1 = spriteLaserE1;
-                        enemyLaser.end2 = spriteLaserE2;
-                        enemyLaser.setColor(Color.GREEN);
-
-                        enemyLaser.position.set(enemy.getBounds().getX(), enemy.getBounds().getY());
-
-                        double enemyLaserDistance = Math.sqrt((enemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
-                                (enemy.getBounds().getX()-Gdx.graphics.getWidth()/2) +
-                                (enemy.getBounds().getY()-0)*
-                                        (enemy.getBounds().getY()-0));
-                        enemyLaser.distance = (float)enemyLaserDistance;
-
-                        double enemyLaserDegrees = Math.atan2(
-                                0 - enemy.getBounds().getY(),
-                                Gdx.graphics.getWidth()/2 - enemy.getBounds().getX()
-                        ) * 180.0d / Math.PI;
-
-                        enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
-                        enemyLaserOn = true;
-                        enemyLasers.add(this.enemyLaser);
-                        Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
 
                     }
                 }
@@ -293,6 +242,45 @@ public class GameRenderer {
         ArrayList<Enemy> tempList = enemyHandler.getList();
         for (int i = 0; i < tempList.size(); i++) {
             Enemy tempEnemy = tempList.get(i);
+
+
+            if(tempEnemy.getState() == Enemy.EnemyState.GOOD &&
+                    tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2){
+
+                enemyLaser = new Laser();
+                enemyLaser.begin1 = spriteLaserS1;
+                enemyLaser.begin2 = spriteLaserS2;
+                enemyLaser.mid1 = spriteLaserM1;
+                enemyLaser.mid2 = spriteLaserM2;
+                enemyLaser.end1 = spriteLaserE1;
+                enemyLaser.end2 = spriteLaserE2;
+                enemyLaser.setColor(Color.GREEN);
+
+                enemyLaser.position.set(tempEnemy.getBounds().getX(), tempEnemy.getBounds().getY());
+
+                double enemyLaserDistance = Math.sqrt((tempEnemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
+                        (tempEnemy.getBounds().getX()-Gdx.graphics.getWidth()/2) +
+                        (tempEnemy.getBounds().getY()-0)*
+                                (tempEnemy.getBounds().getY()-0));
+                enemyLaser.distance = (float)enemyLaserDistance;
+
+                double enemyLaserDegrees = Math.atan2(
+                        0 - tempEnemy.getBounds().getY(),
+                        Gdx.graphics.getWidth()/2 - tempEnemy.getBounds().getX()
+                ) * 180.0d / Math.PI;
+
+                enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
+                this.enemyLaserDuration+= delta;
+
+                enemyLasers.add(this.enemyLaser);
+                this.enemyLaserFired = true;
+
+
+                Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
+
+            }
+
+
             if (touchedArea.x >= tempEnemy.getBounds().x &&
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
                     touchedArea.y >= tempEnemy.getBounds().y &&
@@ -424,16 +412,9 @@ public class GameRenderer {
         for (Laser eLaser : enemyLasers) {
             //Start an enemy laser to player
             eLaser.render();
-            if (enemyLaserOn) {
-                enemyLaserDuration += delta;
-                if (enemyLaserDuration > 0.50f) {
-                    enemyLasers.remove(eLaser);
-                    enemyLaserDuration = 0.0f;
-                    enemyLaserOn = false;
-                }
-            }
         }
-        // HUD
+
+         // HUD
         gameFont.draw(batch, String.valueOf(score), 20.0f, Gdx.graphics.getHeight()-20.0f);
         // Drawing the lives on screen
         for (int i = ending;i>0;i--){
@@ -466,6 +447,9 @@ public class GameRenderer {
     // Draw the enemy
     private void drawEnemy() {
         for (Enemy f : enemyHandler.getList()) {
+
+
+
             // If the index is -1 (texture not set), assign a number between 0 and 4
             if (f.getIndex() == -1) {
                 int index = (int)(Math.random()*goodTexture.length);

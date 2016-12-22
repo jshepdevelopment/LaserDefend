@@ -40,6 +40,7 @@ public class EnemyHandler {
 
         for (int i=0;i<enemyList.size();i++) {
             Enemy enemy = enemyList.get(i);
+
             if (enemy.getState() == EnemyState.GOOD || enemy.getState() == EnemyState.COVERED){
                 enemy.setBounds(new Rectangle(
                                 enemy.getBounds().x,

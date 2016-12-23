@@ -52,6 +52,8 @@ public class GameRenderer {
     private TextureRegion[] badTexture = new TextureRegion[5];
     private TextureRegion coveredTexture;
     private TextureRegion penguinTexture;
+    private TextureRegion santaTexture;
+
 
     public SpriteBatch batch;
     private Vector2 touchedArea = new Vector2();
@@ -129,6 +131,7 @@ public class GameRenderer {
         // getting the sprite for covered food
         coveredTexture = atlas.findRegion("cover");
         penguinTexture = atlas.findRegion("penguin");
+        santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
 
         enemyHandler = EnemyHandler.getInstance();
 
@@ -411,7 +414,7 @@ public class GameRenderer {
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.draw(penguinTexture, Gdx.graphics.getWidth()/2, 0, 128, 128);
+        batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 128, 128);
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();

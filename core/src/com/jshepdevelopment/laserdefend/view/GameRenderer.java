@@ -47,6 +47,8 @@ public class GameRenderer {
     private Sprite spriteLaserE1;
     private Sprite spriteLaserE2;
 
+    private Sprite playerSprite;
+
     private TextureRegion backgroundTexture;
     private TextureRegion[] goodTexture = new TextureRegion[5];
     private TextureRegion[] badTexture = new TextureRegion[5];
@@ -69,9 +71,7 @@ public class GameRenderer {
     //private ArrayList<ParticleEffect> enemyLaserEffects = new ArrayList<ParticleEffect>();
 
     private ShapeRenderer shape;
-
     private EnemyHandler enemyHandler;
-
     private static GameRenderer instance = null;
 
     public GameRenderer(Game game) {
@@ -92,6 +92,7 @@ public class GameRenderer {
 
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
+        santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
         texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
         texLaserS2 = new Texture(Gdx.files.internal("effects/beamstart2.png"));
         texLaserM1 = new Texture(Gdx.files.internal("effects/beammid1.png"));
@@ -99,12 +100,16 @@ public class GameRenderer {
         texLaserE1 = new Texture(Gdx.files.internal("effects/beamend1.png"));
         texLaserE2 = new Texture(Gdx.files.internal("effects/beamend2.png"));
 
+        playerSprite = new Sprite(santaTexture);
+        playerSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+
         spriteLaserS1 = new Sprite(texLaserS1);
         spriteLaserS2 = new Sprite(texLaserS2);
         spriteLaserM1 = new Sprite(texLaserM1);
         spriteLaserM2 = new Sprite(texLaserM2);
         spriteLaserE1 = new Sprite(texLaserE1);
         spriteLaserE2 = new Sprite(texLaserE2);
+
 
         playerLaser = new Laser();
         playerLaser.begin1 = spriteLaserS1;
@@ -131,7 +136,6 @@ public class GameRenderer {
         // getting the sprite for covered food
         coveredTexture = atlas.findRegion("cover");
         penguinTexture = atlas.findRegion("penguin");
-        santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
 
         enemyHandler = EnemyHandler.getInstance();
 
@@ -198,7 +202,8 @@ public class GameRenderer {
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth()),
                             (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/2),
-                    Enemy.EnemyState.GOOD
+                    Enemy.EnemyState.BAD
+
             );
 
             timeBad = 0.0f;
@@ -229,19 +234,29 @@ public class GameRenderer {
 
         // Checking if the covered enemy should show the contents
         for (Enemy enemy : enemyHandler.getList()){
-             if (enemy.getState() == Enemy.EnemyState.COVERED)
-                //if (enemy.getBounds().getY() < Gdx.graphics.getHeight()/2 * Gdx.graphics.getPpcX()){
-                if (enemy.getBounds().getY() < Gdx.graphics.getHeight()/2){
-                    int rand = (int)(Math.random()*2);
-                    if (rand % 2 == 0) {
-                        enemy.setState(Enemy.EnemyState.GOOD_UNCOVERED);
+             if (enemy.getState() == Enemy.EnemyState.COVERED) {
+                 //if (enemy.getBounds().getY() < Gdx.graphics.getHeight()/2 * Gdx.graphics.getPpcX()){
+                 if (enemy.getBounds().getY() < Gdx.graphics.getHeight() / 2) {
+                     int rand = (int) (Math.random() * 2);
+                     if (rand % 2 == 0) {
+                         enemy.setState(Enemy.EnemyState.BAD);
+                         enemy.setSpeed(2);
 
-                    }
-                    else {
-                        enemy.setState(Enemy.EnemyState.BAD);
-
-                    }
+                     } else {
+                         enemy.setState(Enemy.EnemyState.BAD);
+                         enemy.setSpeed(3);
+                     }
+                 }
+             }
+            if (enemy.getState() == Enemy.EnemyState.BAD) {
+                int rand = (int) (Math.random() * 2);
+                if (rand % 2 == 0) {
+                    enemy.setSpeed(2);
+                } else {
+                    enemy.setSpeed(3);
                 }
+
+            }
         }
 
         // Load lasers and checking the collision between the touched area and the enemy
@@ -249,7 +264,7 @@ public class GameRenderer {
         for (int i = 0; i < tempList.size(); i++) {
             Enemy tempEnemy = tempList.get(i);
 
-            if(tempEnemy.getState() == Enemy.EnemyState.GOOD &&
+            if(tempEnemy.getState() == Enemy.EnemyState.BAD &&
                     tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2 &&
                     tempEnemy.getBounds().getY() > 0 && !tempEnemy.getIsFiring()){
 
@@ -342,10 +357,6 @@ public class GameRenderer {
                         effect.start();
                         effects.add(effect);
                         laserOn = true;
-                        // tagging the food to be removed
-                        ending--;
-                        flash = true;
-                        ewSound.play(0.5f);
                         // the device will vibrate for x milliseconds
 //                        Gdx.input.vibrate(300);
 
@@ -354,6 +365,12 @@ public class GameRenderer {
                         break;
 
                     case COVERED:
+
+                        // cant fire on this one
+                        ending--;
+                        flash = true;
+                        ewSound.play(0.5f);
+
                         break;
 
                     case GOOD_UNCOVERED:
@@ -414,7 +431,7 @@ public class GameRenderer {
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 128, 128);
+        playerSprite.draw(batch);//batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 256, 256);
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();

@@ -52,8 +52,8 @@ public class EnemyHandler {
             }
             else if (enemy.getState() == EnemyState.BAD){
                 enemy.setBounds(new Rectangle(
-                                enemy.getBounds().x + delta * enemy.getSpeed(),
-                                enemy.getBounds().y,
+                                enemy.getBounds().x,
+                                enemy.getBounds().y - delta * enemy.getSpeed(),
                                 enemy.getBounds().width,
                                 enemy.getBounds().height
                         )

@@ -248,7 +248,7 @@ public class GameRenderer {
 
             if(tempEnemy.getState() == Enemy.EnemyState.GOOD &&
                     tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2 &&
-                    tempEnemy.getBounds().getY() > 0 ){
+                    tempEnemy.getBounds().getY() > 0 && !tempEnemy.getIsFiring()){
 
                 enemyLaser = new Laser();
                 enemyLaser.begin1 = spriteLaserS1;
@@ -287,6 +287,8 @@ public class GameRenderer {
                 enemyLasers.add(this.enemyLaser);
                 enemyLaserCounter++;
 
+                tempEnemy.setIsFiring(true);
+
                 Gdx.app.log("JSLOG", "enemyLaserCounter " + enemyLaserCounter);
                 Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
 
@@ -297,11 +299,11 @@ public class GameRenderer {
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
                     touchedArea.y >= tempEnemy.getBounds().y &&
                     touchedArea.y <= tempEnemy.getBounds().y+tempEnemy.getBounds().height) {
+
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
-                //Gdx.app.log("JSLOG", "playerLaserDest.x " + playerLaserDest.x + " playerLaserDest.y " + playerLaserDest.y);
-                //Gdx.app.log("JSLOG", "touchedArea.x " + touchedArea.x + " touchedArea.y " + touchedArea.y);
+
 
                 //playerLaser.distance = (150*100%300);
                 double laserDistance = Math.sqrt((Gdx.graphics.getWidth()/2-playerLaserDest.x)*
@@ -376,7 +378,7 @@ public class GameRenderer {
         enemyLaserDuration+=delta;
         Gdx.app.log("JSD", "enemyLaserDuration " + enemyLaserDuration);
 
-        if (enemyLaserDuration > 0.25f) {
+        if (enemyLaserDuration > 1.0f) {
             //for (int i = 1; i < enemyLaserCounter; i++) {
             enemyLasers.clear();
             enemyLaserCounter = 0;

@@ -19,6 +19,7 @@ public class Enemy {
         GOOD_UNCOVERED,
     }
     private static final float SIZE = 1.0f;
+    private boolean isFiring = false;
     private float speed = 1;
 
     private EnemyState state;
@@ -69,4 +70,9 @@ public class Enemy {
         this.speed = eSpeed;
     }
 
+    public boolean getIsFiring() { return isFiring; }
+
+    public void setIsFiring(boolean isFiring) {
+        this.isFiring = isFiring;
+    }
 }

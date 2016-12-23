@@ -23,18 +23,22 @@ import com.jshepdevelopment.laserdefend.model.Laser;
 import com.jshepdevelopment.laserdefend.screens.EndScreen;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameRenderer {
 
     private Game game;
 
     private Laser playerLaser;
-    private int enemyLaserCount = 10;
-    //private Laser[] enemyLaser = new Laser[enemyLaserCount];
+    private int enemyLaserCounter = 0;
     private Laser enemyLaser;
     private ArrayList<Laser> enemyLasers = new ArrayList<Laser>();
-    private ArrayList<Float> enemyLaserTimers = new ArrayList<Float>();
 
+    Random generator = new Random();
+    double rval = generator.nextDouble();
+    double gval = generator.nextDouble();
+    double bval = generator.nextDouble();
+    double aval = generator.nextDouble();
 
     private Sprite spriteLaserS1;
     private Sprite spriteLaserS2;
@@ -165,7 +169,6 @@ public class GameRenderer {
     private float flashDuration = 0.0f;
     private float laserDuration = 0.0f;
     private float enemyLaserDuration = 0.0f;
-    private boolean enemyLaserFired = false;
 
     // Render the game
     public void render(float delta)
@@ -191,7 +194,7 @@ public class GameRenderer {
             enemyHandler.addEnemy(
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/8),
+                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/2),
                     Enemy.EnemyState.GOOD
             );
 
@@ -238,14 +241,14 @@ public class GameRenderer {
                 }
         }
 
-        // Checking the collision between the touched area and the enemy
+        // Load lasers and checking the collision between the touched area and the enemy
         ArrayList<Enemy> tempList = enemyHandler.getList();
         for (int i = 0; i < tempList.size(); i++) {
             Enemy tempEnemy = tempList.get(i);
 
-
             if(tempEnemy.getState() == Enemy.EnemyState.GOOD &&
-                    tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2){
+                    tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2 &&
+                    tempEnemy.getBounds().getY() > 0 ){
 
                 enemyLaser = new Laser();
                 enemyLaser.begin1 = spriteLaserS1;
@@ -254,7 +257,17 @@ public class GameRenderer {
                 enemyLaser.mid2 = spriteLaserM2;
                 enemyLaser.end1 = spriteLaserE1;
                 enemyLaser.end2 = spriteLaserE2;
-                enemyLaser.setColor(Color.GREEN);
+
+                rval = generator.nextDouble();
+                gval = generator.nextDouble();
+                bval = generator.nextDouble();
+                aval = generator.nextDouble();
+
+                //what a hack
+                //if(tempEnemy.getBounds().getY() == Gdx.graphics.getHeight()/2 + 99)
+                this.enemyLaser.setColor(new Color((float)rval, (float)gval, (float)bval, (float)aval));
+
+                //enemyLaser.setColor((int)Color.argb8888((float)rand,(float)rand,(float)rand,(float)rand);
 
                 enemyLaser.position.set(tempEnemy.getBounds().getX(), tempEnemy.getBounds().getY());
 
@@ -270,12 +283,11 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
-                this.enemyLaserDuration+= delta;
 
                 enemyLasers.add(this.enemyLaser);
-                this.enemyLaserFired = true;
+                enemyLaserCounter++;
 
-
+                Gdx.app.log("JSLOG", "enemyLaserCounter " + enemyLaserCounter);
                 Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
 
             }
@@ -358,7 +370,19 @@ public class GameRenderer {
                 }
             }
         }
+
         enemyHandler.setList(tempList);
+
+        enemyLaserDuration+=delta;
+        Gdx.app.log("JSD", "enemyLaserDuration " + enemyLaserDuration);
+
+        if (enemyLaserDuration > 0.25f) {
+            //for (int i = 1; i < enemyLaserCounter; i++) {
+            enemyLasers.clear();
+            enemyLaserCounter = 0;
+            enemyLaserDuration = 0;
+
+        }
 
         // cleaning the effects list
         for (int i=0; i< effects.size(); i++) {
@@ -429,7 +453,6 @@ public class GameRenderer {
 
         // Displaying a flash when the user snatched bad enemy
         if (flash) {
-
             shape.begin(ShapeRenderer.ShapeType.Filled);
             shape.setColor(Color.WHITE);
             shape.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -447,8 +470,6 @@ public class GameRenderer {
     // Draw the enemy
     private void drawEnemy() {
         for (Enemy f : enemyHandler.getList()) {
-
-
 
             // If the index is -1 (texture not set), assign a number between 0 and 4
             if (f.getIndex() == -1) {
@@ -511,7 +532,6 @@ public class GameRenderer {
         eatSound.dispose();
         ewSound.dispose();
         effect.dispose();
-
         //enemyLaserEffect.dispose();
         gameFont.dispose();
         enemyHandler.clearList();

@@ -11,6 +11,11 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+
+		AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
+
+		cfg.useAccelerometer = true;
+
 		initialize(new LaserDefend(), config);
 	}
 }

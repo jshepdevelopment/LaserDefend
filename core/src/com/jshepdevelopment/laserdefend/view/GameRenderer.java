@@ -102,6 +102,7 @@ public class GameRenderer {
 
         playerSprite = new Sprite(santaTexture);
         playerSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+        santaPos = playerSprite.getX();
 
         spriteLaserS1 = new Sprite(texLaserS1);
         spriteLaserS2 = new Sprite(texLaserS2);
@@ -173,9 +174,12 @@ public class GameRenderer {
     private int ending = 3;
     private boolean flash = false;
     private boolean laserOn = false;
+    private boolean laserFired = false;
     private float flashDuration = 0.0f;
     private float laserDuration = 0.0f;
     private float enemyLaserDuration = 0.0f;
+    private float santaPos = 0.0f;
+    private boolean santaFlipped = false;
 
     // Render the game
     public void render(float delta)
@@ -287,17 +291,18 @@ public class GameRenderer {
 
                 //enemyLaser.setColor((int)Color.argb8888((float)rand,(float)rand,(float)rand,(float)rand);
 
-                enemyLaser.position.set(tempEnemy.getBounds().getX(), tempEnemy.getBounds().getY());
+                enemyLaser.position.set(tempEnemy.getBounds().getX()
+                        + tempEnemy.getBounds().getWidth(), tempEnemy.getBounds().getY());
 
-                double enemyLaserDistance = Math.sqrt((tempEnemy.getBounds().getX()-Gdx.graphics.getWidth()/2)*
-                        (tempEnemy.getBounds().getX()-Gdx.graphics.getWidth()/2) +
+                double enemyLaserDistance = Math.sqrt((tempEnemy.getBounds().getX()-playerSprite.getX())*
+                        (tempEnemy.getBounds().getX()-playerSprite.getX()) +
                         (tempEnemy.getBounds().getY()-0)*
                                 (tempEnemy.getBounds().getY()-0));
                 enemyLaser.distance = (float)enemyLaserDistance;
 
                 double enemyLaserDegrees = Math.atan2(
                         0 - tempEnemy.getBounds().getY(),
-                        Gdx.graphics.getWidth()/2 - tempEnemy.getBounds().getX()
+                        playerSprite.getX() - tempEnemy.getBounds().getX()
                 ) * 180.0d / Math.PI;
 
                 enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
@@ -307,35 +312,69 @@ public class GameRenderer {
 
                 tempEnemy.setIsFiring(true);
 
-                Gdx.app.log("JSLOG", "enemyLaserCounter " + enemyLaserCounter);
-                Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
+//                Gdx.app.log("JSLOG", "enemyLaserCounter " + enemyLaserCounter);
+//                Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
 
             }
 
+            // Input from phone pitch to move santa along x axis
+//            Gdx.app.log("JSINPUTLOG", "Pitch: " + Float.toString(Gdx.input.getPitch()));
+//            Gdx.app.log("JSINPUTLOG", "Roll: " + Float.toString(Gdx.input.getRoll()));
+
+            santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
+            playerSprite.setPosition(santaPos, playerSprite.getY());
+
+            //if (laserFired) {
+            //    playerSprite.rotate(-playerLaser.degrees + 90);
+            //    laserFired = false;
+            //}
+
+            if (playerSprite.getX() > Gdx.graphics.getWidth()) {
+                playerSprite.setPosition(Gdx.graphics.getWidth(), playerSprite.getY());
+            }
+
+            if (playerSprite.getX() < 0) {
+                playerSprite.setPosition(0, playerSprite.getY());
+            }
 
             if (touchedArea.x >= tempEnemy.getBounds().x &&
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
                     touchedArea.y >= tempEnemy.getBounds().y &&
                     touchedArea.y <= tempEnemy.getBounds().y+tempEnemy.getBounds().height) {
 
+                if (tempEnemy.getBounds().x > playerSprite.getX() && !santaFlipped ) {
+                    playerSprite.flip(true, false);
+                    santaFlipped = true;
+
+                } else if (tempEnemy.getBounds().x < playerSprite.getX() && santaFlipped){
+                    playerSprite.flip(true, false);
+                    santaFlipped = false;
+                }
+
+
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
 
+                playerLaser.position.set(playerSprite.getX(), playerSprite.getY()
+                        + playerSprite.getHeight() /2);
 
                 //playerLaser.distance = (150*100%300);
-                double laserDistance = Math.sqrt((Gdx.graphics.getWidth()/2-playerLaserDest.x)*
-                        (Gdx.graphics.getWidth()/2-playerLaserDest.x) +
+                double laserDistance = Math.sqrt((playerSprite.getX()-playerLaserDest.x)*
+                        (playerSprite.getX()-playerLaserDest.x) +
                         (0-playerLaserDest.y)*
                                 (0-playerLaserDest.y));
                 playerLaser.distance = (float)laserDistance;
 
                 double laserDegrees = Math.atan2(
                         playerLaserDest.y - 0,
-                        playerLaserDest.x - Gdx.graphics.getWidth()/2
+                        playerLaserDest.x - playerSprite.getX()
                 ) * 180.0d / Math.PI;
 
                 playerLaser.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
+
+              //  playerSprite.rotate(playerLaser.degrees+90);
+                laserFired = true;
 
                 switch (tempEnemy.getState()) {
                     case GOOD:
@@ -452,6 +491,9 @@ public class GameRenderer {
             if (laserDuration > 0.50f) {
                 laserDuration = 0.0f;
                 laserOn = false;
+                //playerSprite.rotate(-playerLaser.degrees + 90);
+                //playerSprite.rotate(-playerLaser.degrees+90);
+
             }
         }
 

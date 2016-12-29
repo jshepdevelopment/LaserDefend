@@ -48,6 +48,7 @@ public class GameRenderer {
     private Sprite spriteLaserE2;
 
     private Sprite playerSprite;
+    private Sprite playerArmSprite;
 
     private TextureRegion backgroundTexture;
     private TextureRegion[] goodTexture = new TextureRegion[5];
@@ -55,6 +56,7 @@ public class GameRenderer {
     private TextureRegion coveredTexture;
     private TextureRegion penguinTexture;
     private TextureRegion santaTexture;
+    private TextureRegion playerArmTexture;
 
 
     public SpriteBatch batch;
@@ -93,6 +95,8 @@ public class GameRenderer {
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
+        playerArmTexture = new TextureRegion(new Texture(Gdx.files.internal("effects/santa_arm.png")));
+
         texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
         texLaserS2 = new Texture(Gdx.files.internal("effects/beamstart2.png"));
         texLaserM1 = new Texture(Gdx.files.internal("effects/beammid1.png"));
@@ -102,6 +106,9 @@ public class GameRenderer {
 
         playerSprite = new Sprite(santaTexture);
         playerSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+        playerArmSprite = new Sprite(playerArmTexture);
+        playerArmSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+
         santaPos = playerSprite.getX();
 
         spriteLaserS1 = new Sprite(texLaserS1);
@@ -152,6 +159,9 @@ public class GameRenderer {
         effect.load(Gdx.files.internal("effects/mist.p"), Gdx.files.internal("effects"));
         effect.setPosition(0, 0);
         effect.start();
+
+        playerArmSprite.setPosition(playerSprite.getX(), playerSprite.getY()
+                + playerSprite.getHeight() / 2);
 
         // Loading the enemy laser particle effect
         //enemyLaserEffect = new ParticleEffect();
@@ -289,8 +299,6 @@ public class GameRenderer {
                 //if(tempEnemy.getBounds().getY() == Gdx.graphics.getHeight()/2 + 99)
                 this.enemyLaser.setColor(new Color((float)rval, (float)gval, (float)bval, (float)aval));
 
-                //enemyLaser.setColor((int)Color.argb8888((float)rand,(float)rand,(float)rand,(float)rand);
-
                 enemyLaser.position.set(tempEnemy.getBounds().getX()
                         + tempEnemy.getBounds().getWidth(), tempEnemy.getBounds().getY());
 
@@ -305,27 +313,26 @@ public class GameRenderer {
                         playerSprite.getX() - tempEnemy.getBounds().getX()
                 ) * 180.0d / Math.PI;
 
-                enemyLaser.degrees = ((float)enemyLaserDegrees)-90; //(float)laserDegrees;
+                enemyLaser.degrees = ((float)enemyLaserDegrees)-90;
 
                 enemyLasers.add(this.enemyLaser);
                 enemyLaserCounter++;
 
                 tempEnemy.setIsFiring(true);
 
-//                Gdx.app.log("JSLOG", "enemyLaserCounter " + enemyLaserCounter);
-//                Gdx.app.log("JSLOG", "enemyLasers.size() " + enemyLasers.size());
-
             }
 
             // Input from phone pitch to move santa along x axis
-//            Gdx.app.log("JSINPUTLOG", "Pitch: " + Float.toString(Gdx.input.getPitch()));
-//            Gdx.app.log("JSINPUTLOG", "Roll: " + Float.toString(Gdx.input.getRoll()));
-
             santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
             playerSprite.setPosition(santaPos, playerSprite.getY());
+            playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth(),
+                    playerSprite.getHeight() / 2);
+            playerLaser.position.set(playerSprite.getX(), playerSprite.getY()
+                    + playerSprite.getHeight() / 2);
+
 
             //if (laserFired) {
-            //    playerSprite.rotate(-playerLaser.degrees + 90);
+            //   playerSprite.rotate(-playerLaser.degrees + 90);
             //    laserFired = false;
             //}
 
@@ -344,10 +351,17 @@ public class GameRenderer {
 
                 if (tempEnemy.getBounds().x > playerSprite.getX() && !santaFlipped ) {
                     playerSprite.flip(true, false);
+                    playerArmSprite.flip(true, false);
+                    playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth()*3, 24 +
+                            playerSprite.getHeight() / 2);
                     santaFlipped = true;
 
                 } else if (tempEnemy.getBounds().x < playerSprite.getX() && santaFlipped){
                     playerSprite.flip(true, false);
+                    playerArmSprite.flip(true, false);
+                    playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth(),
+                            playerSprite.getHeight() / 2);
+
                     santaFlipped = false;
                 }
 
@@ -355,9 +369,6 @@ public class GameRenderer {
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
                 playerLaserDest.y = touchedArea.y;
-
-                playerLaser.position.set(playerSprite.getX(), playerSprite.getY()
-                        + playerSprite.getHeight() /2);
 
                 //playerLaser.distance = (150*100%300);
                 double laserDistance = Math.sqrt((playerSprite.getX()-playerLaserDest.x)*
@@ -372,8 +383,9 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 playerLaser.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
+                playerArmSprite.setRotation(((float)laserDegrees)-90); //(float)laserDegrees;
 
-              //  playerSprite.rotate(playerLaser.degrees+90);
+
                 laserFired = true;
 
                 switch (tempEnemy.getState()) {
@@ -470,6 +482,7 @@ public class GameRenderer {
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        playerArmSprite.draw(batch);//batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 256, 256);
         playerSprite.draw(batch);//batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 256, 256);
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
@@ -486,7 +499,12 @@ public class GameRenderer {
 
         //Start a player laser to enemy
         if (laserOn) {
-            playerLaser.render();
+            if(!santaFlipped){
+                playerLaser.render();
+            }
+            if(santaFlipped){
+                playerLaser.render();
+            }
             laserDuration += delta;
             if (laserDuration > 0.50f) {
                 laserDuration = 0.0f;

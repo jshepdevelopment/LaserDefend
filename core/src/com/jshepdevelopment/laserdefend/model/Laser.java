@@ -51,13 +51,20 @@ public class Laser {
         begin1.setOrigin(begin1.getWidth()/2, 0);
         begin2.setOrigin(begin1.getWidth()/2, 0);
 
-
         mid1.setOrigin(mid1.getWidth()/2, -begin1.getHeight());
         mid2.setOrigin(mid2.getWidth()/2, -begin1.getHeight());
         end1.setOrigin(mid1.getWidth()/2, -begin1.getHeight()-mid1.getHeight());
         end2.setOrigin(mid2.getWidth()/2, -begin1.getHeight()-mid2.getHeight());
 
-
+/*        if(isPlayer) {
+            arm.setRotation(degrees);
+            if(isFlipped){
+                //arm.flip(true, false);
+            } else {
+                arm.flip(false, false);
+            }
+        }
+*/
         begin1.setRotation(degrees);
         begin2.setRotation(degrees);
         mid1.setRotation(degrees);
@@ -70,15 +77,12 @@ public class Laser {
         begin1.draw(lt.batch);
         begin2.draw(lt.batch);
 
-
         mid1.draw(lt.batch);
-
         mid2.draw(lt.batch);
 
         end1.draw(lt.batch);
         end2.draw(lt.batch);
         lt.batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
 
     }
 }

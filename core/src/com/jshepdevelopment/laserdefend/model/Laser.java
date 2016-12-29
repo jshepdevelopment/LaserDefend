@@ -56,15 +56,6 @@ public class Laser {
         end1.setOrigin(mid1.getWidth()/2, -begin1.getHeight()-mid1.getHeight());
         end2.setOrigin(mid2.getWidth()/2, -begin1.getHeight()-mid2.getHeight());
 
-/*        if(isPlayer) {
-            arm.setRotation(degrees);
-            if(isFlipped){
-                //arm.flip(true, false);
-            } else {
-                arm.flip(false, false);
-            }
-        }
-*/
         begin1.setRotation(degrees);
         begin2.setRotation(degrees);
         mid1.setRotation(degrees);

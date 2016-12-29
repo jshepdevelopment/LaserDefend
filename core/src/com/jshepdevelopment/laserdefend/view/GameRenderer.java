@@ -48,7 +48,7 @@ public class GameRenderer {
     private Sprite spriteLaserE2;
 
     private Sprite playerSprite;
-    private Sprite playerArmSprite;
+    private Sprite playerGunSprite;
 
     private TextureRegion backgroundTexture;
     private TextureRegion[] goodTexture = new TextureRegion[5];
@@ -56,7 +56,7 @@ public class GameRenderer {
     private TextureRegion coveredTexture;
     private TextureRegion penguinTexture;
     private TextureRegion santaTexture;
-    private TextureRegion playerArmTexture;
+    private TextureRegion playerGunTexture;
 
 
     public SpriteBatch batch;
@@ -95,7 +95,7 @@ public class GameRenderer {
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
-        playerArmTexture = new TextureRegion(new Texture(Gdx.files.internal("effects/santa_arm.png")));
+        playerGunTexture = new TextureRegion(new Texture(Gdx.files.internal("effects/santa_arm.png")));
 
         texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
         texLaserS2 = new Texture(Gdx.files.internal("effects/beamstart2.png"));
@@ -106,8 +106,9 @@ public class GameRenderer {
 
         playerSprite = new Sprite(santaTexture);
         playerSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
-        playerArmSprite = new Sprite(playerArmTexture);
-        playerArmSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+
+        playerGunSprite = new Sprite(playerGunTexture);
+        playerGunSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
 
         santaPos = playerSprite.getX();
 
@@ -117,7 +118,6 @@ public class GameRenderer {
         spriteLaserM2 = new Sprite(texLaserM2);
         spriteLaserE1 = new Sprite(texLaserE1);
         spriteLaserE2 = new Sprite(texLaserE2);
-
 
         playerLaser = new Laser();
         playerLaser.begin1 = spriteLaserS1;
@@ -159,9 +159,6 @@ public class GameRenderer {
         effect.load(Gdx.files.internal("effects/mist.p"), Gdx.files.internal("effects"));
         effect.setPosition(0, 0);
         effect.start();
-
-        playerArmSprite.setPosition(playerSprite.getX(), playerSprite.getY()
-                + playerSprite.getHeight() / 2);
 
         // Loading the enemy laser particle effect
         //enemyLaserEffect = new ParticleEffect();
@@ -325,10 +322,7 @@ public class GameRenderer {
             // Input from phone pitch to move santa along x axis
             santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
             playerSprite.setPosition(santaPos, playerSprite.getY());
-            playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth(),
-                    playerSprite.getHeight() / 2);
-            playerLaser.position.set(playerSprite.getX(), playerSprite.getY()
-                    + playerSprite.getHeight() / 2);
+            playerGunSprite.setPosition(santaPos, playerSprite.getY());
 
 
             //if (laserFired) {
@@ -351,17 +345,10 @@ public class GameRenderer {
 
                 if (tempEnemy.getBounds().x > playerSprite.getX() && !santaFlipped ) {
                     playerSprite.flip(true, false);
-                    playerArmSprite.flip(true, false);
-                    playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth()*3, 24 +
-                            playerSprite.getHeight() / 2);
                     santaFlipped = true;
 
                 } else if (tempEnemy.getBounds().x < playerSprite.getX() && santaFlipped){
                     playerSprite.flip(true, false);
-                    playerArmSprite.flip(true, false);
-                    playerArmSprite.setPosition(playerSprite.getX() + playerArmSprite.getWidth(),
-                            playerSprite.getHeight() / 2);
-
                     santaFlipped = false;
                 }
 
@@ -383,8 +370,6 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 playerLaser.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
-                playerArmSprite.setRotation(((float)laserDegrees)-90); //(float)laserDegrees;
-
 
                 laserFired = true;
 
@@ -482,8 +467,8 @@ public class GameRenderer {
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        playerArmSprite.draw(batch);//batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 256, 256);
-        playerSprite.draw(batch);//batch.draw(santaTexture, Gdx.graphics.getWidth()/2, 0, 256, 256);
+        playerSprite.draw(batch);
+        playerGunSprite.draw(batch);
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();
@@ -499,12 +484,8 @@ public class GameRenderer {
 
         //Start a player laser to enemy
         if (laserOn) {
-            if(!santaFlipped){
-                playerLaser.render();
-            }
-            if(santaFlipped){
-                playerLaser.render();
-            }
+
+            playerLaser.render();
             laserDuration += delta;
             if (laserDuration > 0.50f) {
                 laserDuration = 0.0f;

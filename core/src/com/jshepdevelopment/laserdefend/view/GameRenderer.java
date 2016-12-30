@@ -95,7 +95,7 @@ public class GameRenderer {
 
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
-        playerGunTexture = new TextureRegion(new Texture(Gdx.files.internal("effects/santa_arm.png")));
+        playerGunTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa_arm.png")));
 
         texLaserS1 = new Texture(Gdx.files.internal("effects/beamstart1.png"));
         texLaserS2 = new Texture(Gdx.files.internal("effects/beamstart2.png"));
@@ -108,7 +108,8 @@ public class GameRenderer {
         playerSprite.setPosition((Gdx.graphics.getWidth()/2) - santaTexture.getRegionWidth()/2, 0);
 
         playerGunSprite = new Sprite(playerGunTexture);
-        playerGunSprite.setPosition(playerSprite.getX(), playerSprite.getY());
+        playerGunSprite.setPosition(playerSprite.getX()/2, playerSprite.getY()+50);
+        playerGunSprite.setOrigin(playerGunSprite.getWidth()/2, 0);
 
         santaPos = playerSprite.getX();
 
@@ -127,7 +128,7 @@ public class GameRenderer {
         playerLaser.end1 = spriteLaserE1;
         playerLaser.end2 = spriteLaserE2;
         playerLaser.setColor(Color.RED);
-        playerLaser.position.set(playerSprite.getX(), 0);
+        playerLaser.position.set(playerSprite.getX(), 50);
 
         batch = new SpriteBatch();
 
@@ -135,11 +136,11 @@ public class GameRenderer {
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("models/laserdefend.pack"));
         // getting the sprites with for good food
         for (int i = 0; i < 5; i++) {
-            goodTexture[i] = atlas.findRegion("good"+i);
+            goodTexture[i] = new TextureRegion(new Texture(Gdx.files.internal("models/drone_black.png")));//atlas.findRegion("good"+i);
         }
         // getting the sprites for bad food
         for (int i = 0; i < 5; i++) {
-            badTexture[i] = atlas.findRegion("bad"+i);
+            badTexture[i] = new TextureRegion(new Texture(Gdx.files.internal("models/drone_white.png")));;
         }
         // getting the sprite for covered food
         coveredTexture = atlas.findRegion("cover");
@@ -297,7 +298,7 @@ public class GameRenderer {
                 this.enemyLaser.setColor(new Color((float)rval, (float)gval, (float)bval, (float)aval));
 
                 enemyLaser.position.set(tempEnemy.getBounds().getX()
-                        + tempEnemy.getBounds().getWidth(), tempEnemy.getBounds().getY());
+                        + tempEnemy.getBounds().getWidth()/2, tempEnemy.getBounds().getY());
 
                 double enemyLaserDistance = Math.sqrt((tempEnemy.getBounds().getX()-playerSprite.getX())*
                         (tempEnemy.getBounds().getX()-playerSprite.getX()) +
@@ -318,13 +319,6 @@ public class GameRenderer {
                 tempEnemy.setIsFiring(true);
 
             }
-
-            // Input from phone pitch to move santa along x axis
-            santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
-
-            playerSprite.setPosition(santaPos, playerSprite.getY());
-            playerGunSprite.setPosition(santaPos+playerSprite.getWidth()/2, playerSprite.getY());
-            playerLaser.position.set(santaPos+playerSprite.getWidth()/2, playerSprite.getY());
 
             //if (laserFired) {
             //   playerSprite.rotate(-playerLaser.degrees + 90);
@@ -364,6 +358,7 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 playerLaser.degrees = ((float)laserDegrees)-90; //(float)laserDegrees;
+                playerGunSprite.setRotation(playerLaser.degrees);
 
                 laserFired = true;
 
@@ -458,11 +453,24 @@ public class GameRenderer {
             game.setScreen(new EndScreen(score, game));
         }
 
+        // Input from phone pitch to move santa along x axis
+        santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
+
+        // Update positions
+        playerSprite.setPosition(santaPos, playerSprite.getY());
+        playerGunSprite.setPosition(santaPos+playerSprite.getWidth()/2, playerSprite.getY()+50);
+        playerLaser.position.set(santaPos+playerSprite.getWidth()/2, 50);
+
+        //Gdx.app.log("JSLOG", "playerLaser.position.x: " + playerLaser.position.x + " y: " +
+        //        playerLaser.position.y);
+
+        //Gdx.app.log("JSLOG", "playerGunSprite.getX() x: " + playerGunSprite.getX() + " y: " +
+        //        playerGunSprite.getY());
+
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        playerSprite.draw(batch);
-        playerGunSprite.draw(batch);
+
 
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();
@@ -489,6 +497,8 @@ public class GameRenderer {
 
             }
         }
+        playerSprite.draw(batch);
+        playerGunSprite.draw(batch);
 
         for (Laser eLaser : enemyLasers) {
             //Start an enemy laser to player

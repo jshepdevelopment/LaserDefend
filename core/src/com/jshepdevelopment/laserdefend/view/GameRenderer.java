@@ -105,10 +105,10 @@ public class GameRenderer {
         texLaserE2 = new Texture(Gdx.files.internal("effects/beamend2.png"));
 
         playerSprite = new Sprite(santaTexture);
-        playerSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+        playerSprite.setPosition((Gdx.graphics.getWidth()/2) - santaTexture.getRegionWidth()/2, 0);
 
         playerGunSprite = new Sprite(playerGunTexture);
-        playerGunSprite.setPosition(Gdx.graphics.getWidth()/2, 0);
+        playerGunSprite.setPosition(playerSprite.getX(), playerSprite.getY());
 
         santaPos = playerSprite.getX();
 
@@ -127,7 +127,7 @@ public class GameRenderer {
         playerLaser.end1 = spriteLaserE1;
         playerLaser.end2 = spriteLaserE2;
         playerLaser.setColor(Color.RED);
-        playerLaser.position.set(Gdx.graphics.getWidth()/2, 0);
+        playerLaser.position.set(playerSprite.getX(), 0);
 
         batch = new SpriteBatch();
 
@@ -321,22 +321,16 @@ public class GameRenderer {
 
             // Input from phone pitch to move santa along x axis
             santaPos = playerSprite.getX() - Gdx.input.getPitch() / 32;
-            playerSprite.setPosition(santaPos, playerSprite.getY());
-            playerGunSprite.setPosition(santaPos, playerSprite.getY());
 
+            playerSprite.setPosition(santaPos, playerSprite.getY());
+            playerGunSprite.setPosition(santaPos+playerSprite.getWidth()/2, playerSprite.getY());
+            playerLaser.position.set(santaPos+playerSprite.getWidth()/2, playerSprite.getY());
 
             //if (laserFired) {
             //   playerSprite.rotate(-playerLaser.degrees + 90);
             //    laserFired = false;
             //}
 
-            if (playerSprite.getX() > Gdx.graphics.getWidth()) {
-                playerSprite.setPosition(Gdx.graphics.getWidth(), playerSprite.getY());
-            }
-
-            if (playerSprite.getX() < 0) {
-                playerSprite.setPosition(0, playerSprite.getY());
-            }
 
             if (touchedArea.x >= tempEnemy.getBounds().x &&
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
@@ -432,7 +426,7 @@ public class GameRenderer {
         enemyHandler.setList(tempList);
 
         enemyLaserDuration+=delta;
-        Gdx.app.log("JSD", "enemyLaserDuration " + enemyLaserDuration);
+        //Gdx.app.log("JSD", "enemyLaserDuration " + enemyLaserDuration);
 
         if (enemyLaserDuration > 1.0f) {
             //for (int i = 1; i < enemyLaserCounter; i++) {

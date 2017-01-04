@@ -30,7 +30,6 @@ public class GameRenderer {
     private Game game;
 
     private Laser playerLaser;
-    private int enemyLaserCounter = 0;
     private Laser enemyLaser;
     private ArrayList<Laser> enemyLasers = new ArrayList<Laser>();
 
@@ -198,8 +197,7 @@ public class GameRenderer {
         timeCoveredAppearance+=delta;
 
         // Placing the enemy on-screen
-        if (timeGood > .8f) {
-
+        if (timeGood > 1.6f) {
             int rand = (int) (Math.random() * 2);
             if (rand % 2 == 0) {
                 enemyHandler.addEnemy(
@@ -217,32 +215,27 @@ public class GameRenderer {
                         Enemy.EnemyState.GOOD
                 );
             }
-
-
             timeGood = 0.0f;
         }
 
-        if (timeBad > 2.0f) {
+        if (timeBad > 4.0f) {
             enemyHandler.addEnemy(
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth() + Gdx.graphics.getWidth()/2),
                             (int)(Math.random()*Gdx.graphics.getHeight())),
                     Enemy.EnemyState.BAD
-
             );
 
             timeBad = 0.0f;
         }
 
-        if (timeCoveredAppearance > 3.5f) {
-
+        if (timeCoveredAppearance > 7.0f) {
             enemyHandler.addEnemy(
                     new Vector2(
                             (int)(Math.random()*Gdx.graphics.getWidth() + Gdx.graphics.getWidth()/2),
                             (int)(Math.random()*Gdx.graphics.getHeight())),
                     Enemy.EnemyState.COVERED);
             timeCoveredAppearance = 0.0f;
-
             //enemyLaserEffect.setPosition(tempx,tempy);
             //double degreesA = Math.atan2(
             //        0 - tempy,
@@ -318,10 +311,12 @@ public class GameRenderer {
                 }
             }
 
-            // One in fifty chance of firing a laser
-            int rand = (int) (Math.random() * 50);
+            // chance of firing a laser
+            int rand = (int) (Math.random() * 100);
             //if(tempEnemy.getState() == Enemy.EnemyState.BAD && rand % 10 == 0){
-            if(rand % 50 == 0){
+            if(rand % 100 == 0 && tempEnemy.getBounds().getY() < Gdx.graphics.getHeight() - 64 &&
+                    tempEnemy.getBounds().getX() > 0 + 64 && tempEnemy.getBounds().getX() <
+                    Gdx.graphics.getWidth()){
             /*if(tempEnemy.getState() == Enemy.EnemyState.BAD &&
                     tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2 &&
                     tempEnemy.getBounds().getY() > 0 && !tempEnemy.getIsFiring()){
@@ -358,9 +353,7 @@ public class GameRenderer {
                 ) * 180.0d / Math.PI;
 
                 enemyLaser.degrees = ((float)enemyLaserDegrees)-90;
-
                 enemyLasers.add(this.enemyLaser);
-                enemyLaserCounter++;
 
                 tempEnemy.setIsFiring(true);
 
@@ -370,7 +363,6 @@ public class GameRenderer {
             //   playerSprite.rotate(-playerLaser.degrees + 90);
             //    laserFired = false;
             //}
-
 
             if (touchedArea.x >= tempEnemy.getBounds().x &&
                     touchedArea.x <= tempEnemy.getBounds().x+tempEnemy.getBounds().width &&
@@ -385,7 +377,6 @@ public class GameRenderer {
                     playerSprite.flip(true, false);
                     santaFlipped = false;
                 }
-
 
                 // set the laser destination
                 playerLaserDest.x = touchedArea.x;
@@ -469,12 +460,10 @@ public class GameRenderer {
         enemyLaserDuration+=delta;
         //Gdx.app.log("JSD", "enemyLaserDuration " + enemyLaserDuration);
 
-        if (enemyLaserDuration > 1.0f) {
+        if (enemyLaserDuration > 0.50f) {
             //for (int i = 1; i < enemyLaserCounter; i++) {
             enemyLasers.clear();
-            enemyLaserCounter = 0;
             enemyLaserDuration = 0;
-
         }
 
         // cleaning the effects list
@@ -507,12 +496,6 @@ public class GameRenderer {
         playerGunSprite.setPosition(santaPos+playerSprite.getWidth()/2, playerSprite.getY()+50);
         playerLaser.position.set(santaPos+playerSprite.getWidth()/2, 50);
 
-        //Gdx.app.log("JSLOG", "playerLaser.position.x: " + playerLaser.position.x + " y: " +
-        //        playerLaser.position.y);
-
-        //Gdx.app.log("JSLOG", "playerGunSprite.getX() x: " + playerGunSprite.getX() + " y: " +
-        //        playerGunSprite.getY());
-
         // Drawing everything on the screen
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -533,23 +516,20 @@ public class GameRenderer {
         if (laserOn) {
             playerLaser.render();
             laserDuration += delta;
-            if (laserDuration > 0.50f) {
+            if (laserDuration > 0.25f) {
                 laserDuration = 0.0f;
                 laserOn = false;
-                //playerSprite.rotate(-playerLaser.degrees + 90);
-                //playerSprite.rotate(-playerLaser.degrees+90);
-
             }
         }
         playerSprite.draw(batch);
         playerGunSprite.draw(batch);
 
         for (Laser eLaser : enemyLasers) {
-            //Start an enemy laser to player
+            //Draw an enemy laser to player
             eLaser.render();
         }
 
-         // HUD
+        // HUD
         gameFont.draw(batch, String.valueOf(score), 20.0f, Gdx.graphics.getHeight()-20.0f);
         // Drawing the lives on screen
         for (int i = ending;i>0;i--){
@@ -559,7 +539,6 @@ public class GameRenderer {
                 batch.draw(penguinTexture, Gdx.graphics.getWidth()/1.2f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
             if (i == 1)
                 batch.draw(penguinTexture, Gdx.graphics.getWidth()/1.11f, Gdx.graphics.getHeight()/1.1f, 0.5f*Gdx.graphics.getPpcX(), 0.5f*Gdx.graphics.getPpcY());
-
         }
 
         // Displaying a flash when the user snatched bad enemy
@@ -575,7 +554,6 @@ public class GameRenderer {
         }
 
         batch.end();
-
     }
 
     // Draw the enemy

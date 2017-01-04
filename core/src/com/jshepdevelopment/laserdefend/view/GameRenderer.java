@@ -92,7 +92,6 @@ public class GameRenderer {
         Texture texLaserE1;
         Texture texLaserE2;
 
-
         backgroundTexture = new TextureRegion(new Texture(Gdx.files.internal("background/background.png")));
         santaTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa.png")));
         playerGunTexture = new TextureRegion(new Texture(Gdx.files.internal("models/santa_arm.png")));
@@ -200,20 +199,34 @@ public class GameRenderer {
 
         // Placing the enemy on-screen
         if (timeGood > .8f) {
-            enemyHandler.addEnemy(
-                    new Vector2(
-                            (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight()) + Gdx.graphics.getHeight()/2),
-                    Enemy.EnemyState.GOOD
-            );
+
+            int rand = (int) (Math.random() * 2);
+            if (rand % 2 == 0) {
+                enemyHandler.addEnemy(
+                        new Vector2(
+                                (int)(Math.random()*Gdx.graphics.getWidth() + Gdx.graphics.getWidth()/2),
+                                (int)(Math.random()*Gdx.graphics.getHeight())),
+                        Enemy.EnemyState.GOOD
+                );
+
+            } else {
+                enemyHandler.addEnemy(
+                        new Vector2(
+                                (int)(Math.random() - Gdx.graphics.getWidth()/2),
+                                (int)(Math.random()*Gdx.graphics.getHeight())),
+                        Enemy.EnemyState.GOOD
+                );
+            }
+
+
             timeGood = 0.0f;
         }
 
         if (timeBad > 2.0f) {
             enemyHandler.addEnemy(
                     new Vector2(
-                            (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/2),
+                            (int)(Math.random()*Gdx.graphics.getWidth() + Gdx.graphics.getWidth()/2),
+                            (int)(Math.random()*Gdx.graphics.getHeight())),
                     Enemy.EnemyState.BAD
 
             );
@@ -225,8 +238,8 @@ public class GameRenderer {
 
             enemyHandler.addEnemy(
                     new Vector2(
-                            (int)(Math.random()*Gdx.graphics.getWidth()),
-                            (int)(Math.random()*Gdx.graphics.getHeight())+ Gdx.graphics.getHeight()/2),
+                            (int)(Math.random()*Gdx.graphics.getWidth() + Gdx.graphics.getWidth()/2),
+                            (int)(Math.random()*Gdx.graphics.getHeight())),
                     Enemy.EnemyState.COVERED);
             timeCoveredAppearance = 0.0f;
 
@@ -256,11 +269,22 @@ public class GameRenderer {
 
                      } else {
                          enemy.setState(Enemy.EnemyState.BAD);
-                         enemy.setSpeed(3);
+                         enemy.setSpeed(5);
                      }
                  }
              }
+            if (enemy.getState() == Enemy.EnemyState.GOOD && enemy.getBounds().getX() < 0) {
+                // Set speed
+                int rand = (int) (Math.random() * 2);
+                if (rand % 2 == 0) {
+                    enemy.setSpeed(-2);
+                } else {
+                    enemy.setSpeed(-5);
+                }
+
+            }
             if (enemy.getState() == Enemy.EnemyState.BAD) {
+                // Set speed
                 int rand = (int) (Math.random() * 2);
                 if (rand % 2 == 0) {
                     enemy.setSpeed(2);
@@ -276,10 +300,32 @@ public class GameRenderer {
         for (int i = 0; i < tempList.size(); i++) {
             Enemy tempEnemy = tempList.get(i);
 
-            if(tempEnemy.getState() == Enemy.EnemyState.BAD &&
+            // Update position
+            if(tempEnemy.getState() == Enemy.EnemyState.BAD) {
+
+                if (tempEnemy.getBounds().getY() > playerSprite.getY()) {
+                    tempEnemy.setYSpeed(3);
+                }
+                if (tempEnemy.getBounds().getY() < playerSprite.getY()) {
+                    tempEnemy.setYSpeed(-3);
+                }
+
+                if (tempEnemy.getBounds().getX() > playerSprite.getX()) {
+                    tempEnemy.setSpeed(3);
+                }
+                if (tempEnemy.getBounds().getX() < playerSprite.getX()) {
+                    tempEnemy.setSpeed(-3);
+                }
+            }
+
+            // One in fifty chance of firing a laser
+            int rand = (int) (Math.random() * 50);
+            //if(tempEnemy.getState() == Enemy.EnemyState.BAD && rand % 10 == 0){
+            if(rand % 50 == 0){
+            /*if(tempEnemy.getState() == Enemy.EnemyState.BAD &&
                     tempEnemy.getBounds().getY() < Gdx.graphics.getHeight()/2 &&
                     tempEnemy.getBounds().getY() > 0 && !tempEnemy.getIsFiring()){
-
+            */
                 enemyLaser = new Laser();
                 enemyLaser.begin1 = spriteLaserS1;
                 enemyLaser.begin2 = spriteLaserS2;
@@ -298,7 +344,7 @@ public class GameRenderer {
                 this.enemyLaser.setColor(new Color((float)rval, (float)gval, (float)bval, (float)aval));
 
                 enemyLaser.position.set(tempEnemy.getBounds().getX()
-                        + tempEnemy.getBounds().getWidth()/2, tempEnemy.getBounds().getY());
+                        + tempEnemy.getBounds().getWidth(), tempEnemy.getBounds().getY());
 
                 double enemyLaserDistance = Math.sqrt((tempEnemy.getBounds().getX()-playerSprite.getX())*
                         (tempEnemy.getBounds().getX()-playerSprite.getX()) +
@@ -471,7 +517,6 @@ public class GameRenderer {
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-
         //batch.draw(coveredTexture, touchedArea.x, touchedArea.y, 100.0f, 100.0f);
         drawEnemy();
 
@@ -486,7 +531,6 @@ public class GameRenderer {
 
         //Start a player laser to enemy
         if (laserOn) {
-
             playerLaser.render();
             laserDuration += delta;
             if (laserDuration > 0.50f) {

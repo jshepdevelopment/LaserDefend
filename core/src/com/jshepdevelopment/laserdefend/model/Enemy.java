@@ -21,6 +21,7 @@ public class Enemy {
     private static final float SIZE = 1.0f;
     private boolean isFiring = false;
     private float speed = 1;
+    private float ySpeed = 1;
 
     private EnemyState state;
     private int textureIndex;
@@ -68,6 +69,12 @@ public class Enemy {
 
     public void setSpeed(float eSpeed) {
         this.speed = eSpeed;
+    }
+
+    public float getYSpeed() { return ySpeed; }
+
+    public void setYSpeed(float eYSpeed) {
+        this.ySpeed = eYSpeed;
     }
 
     public boolean getIsFiring() { return isFiring; }

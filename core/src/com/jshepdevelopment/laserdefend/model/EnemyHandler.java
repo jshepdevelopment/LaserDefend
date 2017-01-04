@@ -43,8 +43,8 @@ public class EnemyHandler {
 
             if (enemy.getState() == EnemyState.GOOD || enemy.getState() == EnemyState.COVERED){
                 enemy.setBounds(new Rectangle(
-                                enemy.getBounds().x,
-                                enemy.getBounds().y - delta * enemy.getSpeed(),
+                                enemy.getBounds().x - delta * enemy.getSpeed(),
+                                enemy.getBounds().y,
                                 enemy.getBounds().width,
                                 enemy.getBounds().height
                         )
@@ -52,8 +52,8 @@ public class EnemyHandler {
             }
             else if (enemy.getState() == EnemyState.BAD){
                 enemy.setBounds(new Rectangle(
-                                enemy.getBounds().x,
-                                enemy.getBounds().y - delta * enemy.getSpeed(),
+                                enemy.getBounds().x - delta * enemy.getSpeed(),
+                                enemy.getBounds().y - delta * enemy.getYSpeed(),
                                 enemy.getBounds().width,
                                 enemy.getBounds().height
                         )
@@ -64,25 +64,6 @@ public class EnemyHandler {
                 i--;
             }
         }
-
-/*        for (int i=0;i<enemyList.size();i++) {
-            Enemy enemy = enemyList.get(i);
-            if (enemy.getBounds().width < 1.2f*Gdx.graphics.getPpcX()){
-
-                enemy.setBounds(new Rectangle(
-                                enemy.getBounds().x,
-                                enemy.getBounds().y,
-                                enemy.getBounds().width + delta,
-                                enemy.getBounds().height + delta
-                        )
-                );
-            }
-            else {
-                enemyList.remove(i);
-                i--;
-            }
-        }
-*/
     }
     public void clearList() {
         enemyList.clear();
